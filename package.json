@@ -1,0 +1,12 @@
+{
+  "name": "jinjup-response",
+  "version": "0.0.1",
+  "description": "A response container of view information targeted for insertion into or updating of an element or element attribute in the requestor's document. Also can contain console information to be loaded into requestor's browser console.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Jon Camuso",
+  "license": "MIT"
+}
