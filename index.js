@@ -1,9 +1,10 @@
 
 var ELEMENT = 'element';
 var ATTRIBUTE = 'attribute';
+var CONSOLE = 'console';
 
 function jinjupResponseView(targetId, targetType){
-	if(targetType !== ELEMENT && targetType !== ATTRIBUTE)
+	if(!targetType)
 	{
 		targetType = ELEMENT;
 	}
@@ -12,25 +13,17 @@ function jinjupResponseView(targetId, targetType){
 	this.id = '';
 	this.content;
 	this.childViews = [];
-
-	this.console = function(){
-		this.logs = [];
-		this.warnings = [];
-		this.errors = [];
-		this.appendLog = function(item){
-			this.logs.push(item);
-		};
-		this.appendWarning = function(item){
-			this.errors.push(item);
-		};
-		this.appendError = function(item){
-			this.appendLog.push(item);
-		};
-	};
 };
 
 
 exports.createResponseView = function(targetId, targetType) {
 	return new jinjupResponseView(targetId, targetType);
 };
+exports.createAttributeView = function(targetId){
+	return new jinjupResponseView(targetId, ATTRIBUTE);
+};
+exports.createConsoleView = function(targetId){
+	return new jinjupResponseView(targetId, CONSOLE);
+};
+
 
