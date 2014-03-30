@@ -88,12 +88,11 @@ Return console information:
 			var info = jjResponse.createConsoleView('info');
 			info.content = 'test information';
 		
-			responseView.childViews.push(logView);
-			responseView.childViews.push(errorView);
-			responseView.childViews.push(warnView);
-			responseView.childViews.push(info);
+			logView.childViews.push(errorView);
+			logView.childViews.push(warnView);
+			logView.childViews.push(info);
 
-			res.send(JSON.stringify(responseView));
+			res.send(JSON.stringify(logView));
 		});
 ```
 
