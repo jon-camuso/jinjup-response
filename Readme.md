@@ -71,7 +71,7 @@ Return a jinjup HTML Object
 		});
 ```
 
-Return consol information:
+Return console information:
 
 ```js
 		self.app.get('/asynch/path_to_console_test', function(req, res){
