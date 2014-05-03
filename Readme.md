@@ -2,37 +2,98 @@
 
 A JavaScript object containing response information resulting from an asynchronous HTTP request to a node.js server.
 
-## Properties
+## Response Properties
 
 ```js
 {
-	targetId:'';
-	targetType:'';
-	id:'';
-	content:{};
-	childViews = [];
+	// Indicates to client what action to perform
+	// post, put or delete
+	//
+	method
+	
+	// Indicates to client on what to perform the action
+	// (see Response Subject below)
+	//
+	subject
+
+	// Data to be delivered to client
+	//
+	content
+
+	// Additional responses to be processed
+	//
+	responses
 }
 ```
 
-The targetId property is the DOM element id of the element or the mode (log, error, info, warn) of the client console targeted for update.
-The targetType property indicates whether the target is an 'element' or a 'console' item.
-The id property is the id of the outer most element contained in the content property
-The childViews property is an array of more jinjup reponse objects to be processed recursively by the jinjup client.
+## Response Methods
 
+Append a response to another response
 
-## Methods
+	appendResponse()
 
 Default method for created a jinjup response:
 
-	createResponseView()
+	createResponse()
 
-For returning console information call:
+Insert content (element, html or text) into element resolved by target
 
-	createConsoleView()
+	postElement(path, content)
 
-Soon to be implemented is support for returning attribute information:
+Replace existing element(s) @ path with content
 
-	createAttributeView()
+	putElement(path, content)
+
+Update element(s) set target[attribute] equal to content
+
+	putAttribute(path, name, content)
+
+Delete target element
+
+	deleteElement(path)
+
+Delete target element[attribute] attribute
+
+	deleteAttribute(path, name)
+
+	postConsole(path, content)
+
+	postLog(content)
+
+	postError(content)
+
+	postWarn(content)
+
+	postInfo(content)
+
+
+## Response Subject Properties
+
+```js
+{
+	// Indicates the client space in which to perform the action
+	// Examples are 'console' and 'dom'
+	//
+	space
+	
+	// Indicates client item on what to perform the action
+	// Examples include 'element', 'attribute' and 'console'
+	//
+	type
+
+	// For types 'element' and attribute the path is a selector
+	// that resolves to either the actual element or the containing
+	// element targeted to be acted upon.  For 'console' type the path
+	// resolves to the console method to be invoked - log, error etc.
+	//
+	path
+
+	// For type 'attribute' indicates the name of the attribute to 
+	// be acted upon.
+	//
+	name
+}
+```
 
 
 ## Examples
@@ -46,10 +107,10 @@ Return HTML
 ```js
 		self.app.get('/asynch/new_content', function(req, res){
 
-			var responseView = jjResponse.createResponseView('content');			
-			responseView.content = '<div>Insert this div into my element having the id "content".</div>';
-		
-			res.send(JSON.stringify(responseView));
+			var newContent = jjResponse.postElement('#content',
+													'<div>Insert this div into my element having the id "content".</div>');
+
+			res.send(JSON.stringify(newContent));
 		});
 ```
 
@@ -60,13 +121,11 @@ Return a jinjup HTML Object
 ```js
 		self.app.get('/asynch/new_content', function(req, res){
 
-			var responseView = jjResponse.createResponseView('content');
-			
 			var div = jjHtml.div();			
 			div.textContent = 'Insert this div into my element having the id "content".';
+
+			var responseView = jjResponse.postElement('#content', div);
 			
-			responseView.content = div;
-		
 			res.send(JSON.stringify(responseView));
 		});
 ```
@@ -76,21 +135,17 @@ Return console information:
 ```js
 		self.app.get('/asynch/path_to_console_test', function(req, res){
 
-			var logView = jjResponse.createConsoleView('log');
-			logView.content = 'test log';
+			var logView = jjResponse.postLog('test log');
 
-			var errorView = jjResponse.createConsoleView('error');
-			errorView.content = 'test error';
+			var errorView = jjResponse.postError('test error');
 
-			var warnView = jjResponse.createConsoleView('warn');
-			warnView.content = 'test warning';
+			var warnView = jjResponse.postWarn('test warn');
 
-			var info = jjResponse.createConsoleView('info');
-			info.content = 'test information';
+			var info = jjResponse.postInfo('test info');
 		
-			logView.childViews.push(errorView);
-			logView.childViews.push(warnView);
-			logView.childViews.push(info);
+			logView.appendResponse(errorView);
+			logView.appendResponse(warnView);
+			logView.appendResponse(info);
 
 			res.send(JSON.stringify(logView));
 		});
@@ -103,43 +158,66 @@ jinjup Response containing jinjup HTML control object as content:
 
 ```js
 {
-   "targetId":"content",
-   "targetType":"element",
-   "id":"",
-   "childViews":[],
+   "method":"put",
+   "subject":{
+      "space":"dom",
+      "type":"element",
+      "path":"#content"
+   },
    "content":{
-      "tagName":"article",
+      "tagName":"div",
       "childNodes":[
          {
-            "tagName":"h1",
+            "tagName":"article",
             "childNodes":[
                {
-                  "nodeType":"text",
-                  "nodeValue":"About JinJup"
-               }
-            ],
-            "attributes":{},
-            "nodeType":"element"
-         },
-         {
-            "tagName":"p",
-            "childNodes":[
+                  "tagName":"h1",
+                  "childNodes":[
+                     {
+                        "nodeType":"text",
+                        "nodeValue":"Contact the Author of JinJup"
+                     }
+                  ],
+                  "attributes":{
+
+                  },
+                  "nodeType":"element"
+               },
                {
-                  "nodeType":"text",
-                  "nodeValue":"The jinjup libraries are intended to enable rapid and easy creation of HTML content, that is both ajax enabled and SEO freindly, using pure JavaScript on the client and on the server."
+                  "tagName":"p",
+                  "childNodes":[
+                     {
+                        "nodeType":"text",
+                        "nodeValue":"Jon Camuso"
+                     }
+                  ],
+                  "attributes":{
+
+                  },
+                  "nodeType":"element"
+               },
+               {
+                  "tagName":"p",
+                  "childNodes":[
+
+                  ],
+                  "attributes":{
+
+                  },
+                  "nodeType":"element"
                }
             ],
-            "attributes":{},
-            "nodeType":"element"
-         },
-         {
-            "tagName":"p",
-            "childNodes":[],
-            "attributes":{},
+            "attributes":{
+
+            },
             "nodeType":"element"
          }
       ],
-      "attributes":{},
+      "attributes":{
+         "id":"content"
+      },
       "nodeType":"element"
    }
 }
+
+```
