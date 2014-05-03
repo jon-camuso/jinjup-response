@@ -1,29 +1,173 @@
+/*
+jinjup-response
+jinjup.com 
+Copyright (c) 2013-2014 Jon Camuso <jcamuso@exechos.com>
+MIT Licensed
+*/
 
-var ELEMENT = 'element';
-var ATTRIBUTE = 'attribute';
-var CONSOLE = 'console';
+// Initialize a jinjup Response
+//
+// @param	{String}	method
+// @param	{Object}	subject
+// @param	{Object} || {String}	content
+//
+function Response(method, subject, content)
+{
+	var responses = null;
+	this.method = method ? method : '';
+	this.subject = subject;
+	this.content = content ? content : null;
 
-function jinjupResponseView(targetId, targetType){
-	if(!targetType)
+	this.appendResponse = function (response)
 	{
-		targetType = ELEMENT;
+		if (response instanceof Response)
+		{
+			if (!(responses in this))
+			{
+				this.responses = [];
+			}
+			if (this.responses === null)
+			{
+				responses = [];
+			}
+			responses.push(response);
+		}
 	}
-	this.targetId = targetId;
-	this.targetType = targetType;
-	this.id = '';
-	this.content;
-	this.childViews = [];
 };
 
+// Initialize a jinjup Response Subject
+//
+// @param	{String}	space
+// @param	{String}	type
+// @param	{String}	path
+// @param	{String}	name
+//
+function Subject(space, type, path, name)
+{
+	this.space = space;
+	this.type = type;
+	this.path = path;
+	if (name)
+	{
+		this.name = name;
+	}
+};
+var tempSubject = function () { };
+tempSubject.prototype = Subject.prototype;
 
-exports.createResponseView = function(targetId, targetType) {
-	return new jinjupResponseView(targetId, targetType);
+function Element(path)
+{
+	Subject.call(this, 'dom', 'element', path);
 };
-exports.createAttributeView = function(targetId){
-	return new jinjupResponseView(targetId, ATTRIBUTE);
-};
-exports.createConsoleView = function(targetId){
-	return new jinjupResponseView(targetId, CONSOLE);
-};
+Element.prototype = new tempSubject();
+Element.prototype.constructor = Subject;
 
+function Attribute(path, name)
+{
+	Subject.call(this, 'dom', 'element', path, name);
+};
+Attribute.prototype = new tempSubject();
+Attribute.prototype.constructor = Subject;
+
+function Console(path)
+{
+	Subject.call(this, 'console', 'console', path);
+};
+Console.prototype = new tempSubject();
+Console.prototype.constructor = Subject;
+
+var tempConsole = function () { };
+tempConsole.prototype = Console.prototype;
+
+function Log()
+{
+	Console.call(this, 'log');
+};
+Log.prototype = new tempConsole();
+Log.prototype.constructor = Console;
+
+function Warn()
+{
+	Console.call(this, 'warn');
+};
+Warn.prototype = new tempConsole();
+Warn.prototype.constructor = Console;
+
+function Info()
+{
+	Console.call(this, 'info');
+};
+Info.prototype = new tempConsole();
+Info.prototype.constructor = Console;
+
+function Error(path)
+{
+	Console.call(this, 'error');
+};
+Error.prototype = new tempConsole();
+Error.prototype.constructor = Console;
+
+
+// Create a new Response
+//
+exports.createResponse = function (method, subject, content)
+{
+	return new Response(method, subject, content);
+}
+
+// Insert content (element, html or text) into element resolved by target
+//
+exports.postElement = function (path, content)
+{
+	return new Response('post', new Element(path), content);
+}
+
+// Replace existing element(s) @ path with content
+//
+exports.putElement = function (path, content)
+{
+	return new Response('put', new Element(path), content);
+}
+
+// Update element(s) set target[attribute] equal to content
+//
+exports.putAttribute = function (path, name, content)
+{
+	return new Response('put', new Attribute(path, name), content);
+}
+
+// Delete target element
+// 
+exports.deleteElement = function (path)
+{
+	return new Response('delete', new Element(path));
+}
+
+// Delete target element[attribute] attribute
+// 
+exports.deleteAttribute = function (path, name)
+{
+	return new Response('delete', new Attribute(path, name));
+}
+
+exports.postConsole = function (path, content)
+{
+	return new Response('post', new Console(path), content);
+}
+exports.postLog = function (content)
+{
+	return new Response('post', new Log(), content);
+}
+exports.postError = function (content)
+{
+	return new Response('post', new Error(), content);
+}
+exports.postWarn = function (content)
+{
+	return new Response('post', new Warn(), content);
+}
+exports.postInfo = function (content)
+{
+	return new Response('post', new Info(), content);
+}
 

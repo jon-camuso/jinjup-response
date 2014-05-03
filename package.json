@@ -1,12 +1,38 @@
 {
   "name": "jinjup-response",
-  "version": "0.0.1",
   "description": "A response container of view information targeted for insertion into or updating of an element or element attribute in the requestor's document. Also can contain console information to be loaded into requestor's browser console.",
-  "main": "index.js",
+  "version": "0.1.0",
+  "author": {
+    "name": "Jon Camuso",
+    "email": "jcamuso@exechos.com"
+  },
+  "contributors": [
+    {
+      "name": "Jon Camuso",
+      "email": "jcamuso@exechos.com"
+    }
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
-  "author": "Jon Camuso",
-  "license": "MIT"
+  "keywords": [
+    "jinjup",
+    "framework",
+    "response",
+    "web",
+    "rest",
+    "restful",
+    "app",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jon-camuso/jinjup-response"
+  },
+  "main": "index",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "license": "MIT",
+  "readmeFilename": "Readme.md"
 }
