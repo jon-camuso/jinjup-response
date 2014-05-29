@@ -1,5 +1,5 @@
 /*
-jinjup-response
+jinjup-response v0.1.0
 jinjup.com 
 Copyright (c) 2013-2014 Jon Camuso <jcamuso@exechos.com>
 MIT Licensed
@@ -13,7 +13,7 @@ MIT Licensed
 //
 function Response(method, subject, content)
 {
-	var responses = null;
+	this.responses = null;
 	this.method = method ? method : '';
 	this.subject = subject;
 	this.content = content ? content : null;
@@ -22,15 +22,11 @@ function Response(method, subject, content)
 	{
 		if (response instanceof Response)
 		{
-			if (!(responses in this))
+			if (!this.responses)
 			{
 				this.responses = [];
 			}
-			if (this.responses === null)
-			{
-				responses = [];
-			}
-			responses.push(response);
+			this.responses.push(response);
 		}
 	}
 };
@@ -64,7 +60,7 @@ Element.prototype.constructor = Subject;
 
 function Attribute(path, name)
 {
-	Subject.call(this, 'dom', 'element', path, name);
+	Subject.call(this, 'dom', 'attribute', path, name);
 };
 Attribute.prototype = new tempSubject();
 Attribute.prototype.constructor = Subject;
@@ -150,22 +146,36 @@ exports.deleteAttribute = function (path, name)
 	return new Response('delete', new Attribute(path, name));
 }
 
+// Insert information into consol space
+//
 exports.postConsole = function (path, content)
 {
 	return new Response('post', new Console(path), content);
 }
+
+// Insert content into consol Log
+//
 exports.postLog = function (content)
 {
 	return new Response('post', new Log(), content);
 }
+
+// Insert content into consol Error
+//
 exports.postError = function (content)
 {
 	return new Response('post', new Error(), content);
 }
+
+// Insert content into consol Warn
+//
 exports.postWarn = function (content)
 {
 	return new Response('post', new Warn(), content);
 }
+
+// Insert content into consol Info
+//
 exports.postInfo = function (content)
 {
 	return new Response('post', new Info(), content);
