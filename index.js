@@ -111,6 +111,11 @@ exports.createResponse = function (method, subject, content)
 	return new Response(method, subject, content);
 }
 
+exports.createSubject = function (space, type, path, name)
+{
+	return new Subject(space, type, path, name);
+}
+
 // Insert content (element, html or text) into element resolved by target
 //
 exports.postElement = function (path, content)
