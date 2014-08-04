@@ -38,7 +38,7 @@ function Response(method, subject, content)
 // @param	{String}	path
 // @param	{String}	name
 //
-function Subject(space, type, path, name)
+function Subject(space, type, path, name, subPath)
 {
 	this.space = space;
 	this.type = type;
@@ -46,6 +46,10 @@ function Subject(space, type, path, name)
 	if (name)
 	{
 		this.name = name;
+	}
+	if (subPath)
+	{
+		this.subPath = subPath;
 	}
 };
 var tempSubject = function () { };
@@ -58,9 +62,9 @@ function Element(path)
 Element.prototype = new tempSubject();
 Element.prototype.constructor = Subject;
 
-function Attribute(path, name)
+function Attribute(path, name, subPath)
 {
-	Subject.call(this, 'dom', 'attribute', path, name);
+	Subject.call(this, 'dom', 'attribute', path, name, subPath);
 };
 Attribute.prototype = new tempSubject();
 Attribute.prototype.constructor = Subject;
@@ -111,9 +115,9 @@ exports.createResponse = function (method, subject, content)
 	return new Response(method, subject, content);
 }
 
-exports.createSubject = function (space, type, path, name)
+exports.createSubject = function (space, type, path, name, subPath)
 {
-	return new Subject(space, type, path, name);
+	return new Subject(space, type, path, name, subPath);
 }
 
 // Insert content (element, html or text) into element resolved by target
@@ -130,13 +134,6 @@ exports.putElement = function (path, content)
 	return new Response('put', new Element(path), content);
 }
 
-// Update element(s) set target[attribute] equal to content
-//
-exports.putAttribute = function (path, name, content)
-{
-	return new Response('put', new Attribute(path, name), content);
-}
-
 // Delete target element
 // 
 exports.deleteElement = function (path)
@@ -144,11 +141,25 @@ exports.deleteElement = function (path)
 	return new Response('delete', new Element(path));
 }
 
-// Delete target element[attribute] attribute
-// 
-exports.deleteAttribute = function (path, name)
+// Appends content to target[attribute]
+//
+exports.postAttribute = function (path, name, content, subPath)
 {
-	return new Response('delete', new Attribute(path, name));
+	return new Response('post', new Attribute(path, name, subPath), content);
+}
+
+// Overwrites target[attribute] or target[attribute] + subPath
+//
+exports.putAttribute = function (path, name, content, subPath)
+{
+	return new Response('put', new Attribute(path, name, subPath), content);
+}
+
+// Delete target element[attribute] attribute or target[attribute] + subPath
+// 
+exports.deleteAttribute = function (path, name, subPath)
+{
+	return new Response('delete', new Attribute(path, name, subPath));
 }
 
 // Insert information into consol space
